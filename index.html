@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="si" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G.C.E. O/L Mathematics AI Target Paper Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', 'Noto Sans Sinhala', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .print-shadow { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-emerald-400 flex items-center gap-2">
+                    📐 O/L Mathematics AI Target Paper Generator
+                </h1>
+                <p class="text-xs text-slate-400">Sri Lankan G.C.E. Ordinary Level (2016 - 2026 Curriculum Trend Analysis)</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-lg">
+                    🖨️ Print / Save PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 flex-grow">
+        
+        <!-- Sidebar Controls -->
+        <aside class="lg:col-span-1 bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-xl space-y-6 no-print h-fit">
+            <h2 class="text-lg font-semibold text-emerald-300 border-b border-slate-700 pb-2">⚙️ Paper Settings</h2>
+
+            <!-- API Key Setup -->
+            <div class="space-y-2">
+                <label class="block text-xs font-medium text-slate-300">Gemini API Key (අත්‍යවශ්‍යයි):</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none">
+                <p class="text-[11px] text-slate-400">Google AI Studio එකෙන් නොමිලේ ලබාගත් Key එක මෙහි දමන්න.</p>
+                <button onclick="saveApiKey()" class="w-full bg-slate-700 hover:bg-slate-600 text-emerald-400 font-semibold py-2 rounded-lg text-xs transition border border-slate-600">
+                    💾 Save API Key
+                </button>
+            </div>
+
+            <hr class="border-slate-700">
+
+            <!-- Medium Selection -->
+            <div class="space-y-2">
+                <label class="block text-xs font-medium text-slate-300">Medium / මාධ්‍ය:</label>
+                <select id="langSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none">
+                    <option value="Sinhala">සිංහල මාධ්‍ය (Sinhala)</option>
+                    <option value="English">English Medium</option>
+                </select>
+            </div>
+
+            <!-- Paper Type -->
+            <div class="space-y-2">
+                <label class="block text-xs font-medium text-slate-300">Paper Type / ප්‍රශ්න පත්‍රය:</label>
+                <select id="paperTypeSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:border-emerald-500 focus:outline-none">
+                    <option value="Paper I (Full)">Paper I (Full - Part A & B)</option>
+                    <option value="Paper II (Full)">Paper II (Full - Part A & B)</option>
+                    <option value="Paper I - Part A">Paper I - Part A (Short Qs)</option>
+                    <option value="Paper II - Part A">Paper II - Part A (Structured Long Qs)</option>
+                </select>
+            </div>
+
+            <!-- Generate Button -->
+            <button onclick="generateTargetPaper()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+                🚀 Generate Target Paper
+            </button>
+        </aside>
+
+        <!-- Content Display Area -->
+        <section class="lg:col-span-3 space-y-6">
+            
+            <!-- Loading Indicator -->
+            <div id="loadingBox" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-10 text-center space-y-4 shadow-xl">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-emerald-500 border-t-transparent"></div>
+                <p class="text-emerald-400 font-medium">Analyzing 2016-2026 O/L Exam Trends & Generating Fresh Target Paper...</p>
+                <p class="text-xs text-slate-400">ದಯவு করে තත්පර කිහිපයක් රැඳී සිටින්න...</p>
+            </div>
+
+            <!-- Paper Container -->
+            <div id="paperOutputArea" class="bg-white text-slate-900 p-8 rounded-2xl shadow-2xl print-shadow min-h-[600px] space-y-6">
+                <div class="text-center border-b border-slate-300 pb-6">
+                    <h2 class="text-xl font-bold uppercase tracking-wide">ශ්‍රී ලංකා විභාග දෙපාර්තමේන්තුව - සාමාන්‍ය පෙළ ගණිතය</h2>
+                    <p class="text-sm font-semibold text-slate-700 mt-1">G.C.E. (O/L) Examination - Target Model Paper (2016-2026 Pattern)</p>
+                    <div id="paperMetaHeader" class="flex justify-between text-xs text-slate-600 mt-4 px-2">
+                        <span>මාධ්‍ය: සිංහල</span>
+                        <span>කාලය: පැය 2යි විනාඩි ඊ</span>
+                        <span>ලකුණු: 100</span>
+                    </div>
+                </div>
+
+                <!-- Default / Generated Content will appear here -->
+                <div id="paperContentBody" class="space-y-6 text-sm leading-relaxed">
+                    <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-3">
+                        <h3 class="text-lg font-bold text-slate-800">👋 පිළිගනිමු! වින්දික ගුරුතුමාගේ O/L AI Target Paper Generator වෙත.</h3>
+                        <p class="text-slate-600 text-xs max-w-lg mx-auto">
+                            ඔබගේ Google AI Studio (Gemini) API Key එක වම්පස කොටසට ඇතුළත් කර <b>"Generate Target Paper"</b> බටන් එක ක්ලික් කරන්න. එවිට 2016 සිට මේ දක්වා O/L විභාග ප්‍රශ්න රටාවන්ට අනුව අලුත්ම ප්‍රශ්න පත්‍රයක් සැදී එනු ඇත.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marking Scheme Area -->
+            <div id="markingSchemeArea" class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl hidden">
+                <h3 class="text-base font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                    📋 ලකුණු දීමේ පටිපාටිය සහ පිළිතුරු (Marking Scheme & Solutions)
+                </h3>
+                <div id="markingSchemeBody" class="text-xs text-slate-300 space-y-2">
+                    <!-- Dynamic Answers -->
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Script Logic -->
+    <script>
+        // Check saved API key on load
+        window.onload = function() {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if(savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
+            }
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if(key) {
+                localStorage.setItem('gemini_api_key', key);
+                alert('API Key successfully saved!');
+            } else {
+                alert('لطفاً කරුණාකර වලංගු API Key එකක් ඇතුළත් කරන්න.');
+            }
+        }
+
+        async function generateTargetPaper() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('gemini_api_key');
+            const lang = document.getElementById('langSelect').value;
+            const paperType = document.getElementById('paperTypeSelect').value;
+
+            if(!apiKey) {
+                alert('⚠️ කරුණාකර මුලින්ම ඔබගේ Gemini API Key එක වම්පස කොටසට ඇතුළත් කර Save කරන්න!');
+                return;
+            }
+
+            // Show Loading
+            document.getElementById('loadingBox').classList.remove('hidden');
+            document.getElementById('paperContentBody').innerHTML = '';
+            document.getElementById('markingSchemeArea').classList.add('hidden');
+
+            const promptText = `Act as an expert Sri Lankan G.C.E. O/L Mathematics paper setter. Generate a comprehensive ${paperType} in ${lang} following the exact styling, structure, and difficulty standards of Sri Lankan O/L exams from 2016 to 2026. 
+            
+            Format your response strictly in HTML format (using <h3>, <p>, <ul>, <li>, <strong> tags for questions and answers) with two distinct sections:
+            1. SECTION 1: The full Question Paper (ප්‍රශ්න පත්‍රය).
+            2. SECTION 2: The step-by-step Marking Scheme and answers (ලකුණු දීමේ පටිපාටිය හා පිළිතුරු).
+            
+            Make sure the mathematical notations are clear and standard.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById('loadingBox').classList.add('hidden');
+
+                if(data.candidates && data.candidates[0].content.parts[0].text) {
+                    let aiOutput = data.candidates[0].content.parts[0].text;
+                    
+                    // Clean markdown code blocks if AI returns them
+                    aiOutput = aiOutput.replace(/```html/g, '').replace(/```/g, '');
+
+                    // Split paper and marking scheme if possible, or put everything cleanly
+                    document.getElementById('paperContentBody').innerHTML = aiOutput;
+                    document.getElementById('markingSchemeArea').classList.remove('hidden');
+                    document.getElementById('markingSchemeBody').innerHTML = "<p class='text-emerald-300'>ඉහත ප්‍රශ්න පත්‍රය තුළම පිළිතුරු සහ ලකුණු දීමේ පටිපාටිය ඇතුළත් කර ඇත.</p>";
+                } else {
+                    throw new Error('Invalid response structure from AI.');
+                }
+
+            } catch (error) {
+                document.getElementById('loadingBox').classList.add('hidden');
+                alert('ගැටළුවක් ඇති විය: ' + error.message + '\nකරුණාකර ඔබගේ API Key එක නිවැරදි දැයි පරීක්ෂා කරන්න.');
+            }
+        }
+    </script>
+</body>
+</html>
